@@ -1,0 +1,37 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity ClkDivider is
+    Port ( CLK : in STD_LOGIC; -- semnalul clk
+           Divisor : in STD_LOGIC_VECTOR ( 31 downto 0 ); -- Divizor = ( frecventa placutei / ( 2 * frecventa dorita ) )
+           CLKOUT : out STD_LOGIC ); -- noul clk rezultat
+end ClkDivider;
+
+architecture Behavioral of ClkDivider is
+
+    signal CLKTOG : STD_LOGIC := '0'; -- semnal de comutare
+
+begin
+
+    process ( CLK )
+    
+        variable count : unsigned ( 31 downto 0 ) := x"00000000"; -- variabile numarator
+        
+    begin
+    
+        if ( rising_edge ( CLK ) ) then
+            count := count + 1; -- numara
+            if ( STD_LOGIC_VECTOR ( count ) = Divisor ) then -- cand numaratorul ajunge la valoarea divizorului
+                CLKTOG <= NOT CLKTOG; -- se intampla comutarea
+                count := x"00000000"; -- reset 0
+                
+            end if;
+            
+        end if;
+        
+    end process;
+    
+    CLKOUT <= CLKTOG; -- clk primeste semnalul de comutare
+
+end Behavioral;

@@ -1,0 +1,53 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL; -- required libraries
+use IEEE.NUMERIC_STD.ALL;
+
+entity SSDDriver is
+    Port ( D0 : in STD_LOGIC_VECTOR (3 downto 0); -- primul digit
+           D1 : in STD_LOGIC_VECTOR (3 downto 0); -- al doilea digit
+           D2 : in STD_LOGIC_VECTOR (3 downto 0); -- al treilea digit
+           D3 : in STD_LOGIC_VECTOR (3 downto 0); -- al patrulea digit
+           CLK : in STD_LOGIC; 
+           DP : out STD_LOGIC; -- punctul zecimal
+           Anodes : out STD_LOGIC_VECTOR (3 downto 0); 
+           temp : out STD_LOGIC_VECTOR (3 downto 0)); -- temp este un semnal controlat de variabila SEL
+end SSDDriver;
+
+architecture Behavioral of SSDDriver is
+
+begin
+    process (CLK) 
+    
+        variable SEL : unsigned (1 downto 0) := "00"; 
+        
+    begin
+    
+        if (rising_edge(CLK)) then -- multiplexor
+            case SEL is
+            
+                when "00" => temp <= D0; -- afiseaza sutimile
+                    Anodes <= "1110";--afiseaza pe digitul cel mai din dreapta
+                    DP <= '1'; 
+                    SEL := SEL + 1; -- numara
+                    
+                when "01" => temp <= D1; -- afiseaza zecile 
+                    Anodes <= "1101"; -- afiseaza pe digitul al doilea
+                    DP <= '1'; 
+                    SEL := SEL + 1; -- numara
+                        
+                when "10" => temp <= D2; -- afiseaza unitatile de secunda
+                    Anodes <= "1011"; -- afiseaza pe digitul al treilea
+                    DP <= '0'; 
+                    SEL := SEL + 1; -- numara
+                    
+                when others => temp <= D3; -- afiseaza zecimile de secunda
+                    Anodes <= "0111"; -- afisarea pe primul digit din stanga
+                    DP <= '1';
+                    SEL := "00"; -- reset se intoarce la 0
+            end case;
+            
+        end if;
+        
+    end process;
+
+end Behavioral;

@@ -1,0 +1,47 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL; 
+use IEEE.NUMERIC_STD.ALL;
+
+entity Digits is
+    Port ( S : in STD_LOGIC; -- semnal de activare
+           RST : in STD_LOGIC; -- reset intrare
+           CLK : in STD_LOGIC;
+           N : out STD_LOGIC; -- semnal clk pentru urmatorul digit
+           D : out STD_LOGIC_VECTOR ( 3 downto 0 ) ); -- valoare binara pentru digit
+end Digits;
+
+architecture Behavioral of Digits is
+
+    signal X : STD_LOGIC := '1'; -- initial X e 1, iar clk intrare pentru urmatorul digit se initializeaza cand X e 10
+
+begin
+
+    process ( S, CLK )
+    
+        variable count : unsigned ( 3 downto 0 ) := x"0";
+    
+    begin
+        
+        if RST = '1' then
+            count := x"0"; -- resetul e independent de clk
+            X <= '1'; -- reinitializare clk
+        
+        elsif ( S = '1' and rising_edge ( CLK ) ) then
+            count := count + 1; --numara
+            if ( STD_LOGIC_VECTOR ( count ) = x"A" ) then -- X=10
+                count := x"0"; -- resetam pentru numarare din nou
+                X <= NOT X;
+                    
+            elsif ( STD_LOGIC_VECTOR ( count ) = x"5" ) then-- X=5
+                X <= NOT X;
+                    
+            end if;
+            
+        end if;
+        
+        D <= STD_LOGIC_VECTOR ( count );
+        N <= X;
+        
+    end process;
+
+end Behavioral;
